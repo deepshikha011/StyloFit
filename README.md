@@ -2,17 +2,19 @@
 
 StyloFit is a comprehensive outfit recommendation platform that uses artificial intelligence to analyze clothing items and provide personalized style suggestions based on weather, occasion, and individual preferences.
 
+**Smart Outfit Recommendation System** - An AI-based application that suggests outfits using the user's wardrobe, current weather, and selected occasion. Users log in via mobile OTP, choose gender, upload clothing images, and receive personalized outfit, makeup, jewellery, and hairstyle recommendations for daily use.
+
 ## 🏗️ System Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   React Frontend │    │ Spring Boot API │    │  Python AI      │
-│   (Port 3000)    │◄──►│   (Port 8080)   │◄──►│  (Port 5000)    │
+│   (Port 3000)    │◄──►│   (Port 8081)   │◄──►│  (Port 5000)    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                               │
                               ▼
                        ┌─────────────────┐
-                       │   MySQL DB      │
+                       │   H2/MySQL DB   │
                        │   (Port 3306)   │
                        └─────────────────┘
 ```
@@ -41,12 +43,39 @@ StyloFit is a comprehensive outfit recommendation platform that uses artificial 
 - **Java 17+** with Maven 3.6+
 - **Python 3.8+** with pip
 - **Node.js 16+** with npm
-- **MySQL 8.0+**
+- **MySQL 8.0+** (optional - H2 configured for development)
 - **OpenWeather API Key**
 
 ## 🛠️ Installation & Setup
 
-### 1. Database Setup
+### Quick Start (Development Mode)
+The project is configured to use H2 in-memory database for easy development setup.
+
+### 1. Backend Setup (Spring Boot)
+```bash
+cd backend
+mvn clean install
+mvn spring-boot:run
+# Backend will run on http://localhost:8081
+```
+
+### 2. AI Service Setup (Python)
+```bash
+cd ai-service
+pip install -r requirements.txt
+python main.py
+# AI service will run on http://localhost:5000
+```
+
+### 3. Frontend Setup (React)
+```bash
+cd frontend
+npm install
+npm start
+# Frontend will run on http://localhost:3000
+```
+
+### Production Database Setup (MySQL)
 ```sql
 CREATE DATABASE stylofit_db;
 CREATE USER 'stylofit_user'@'localhost' IDENTIFIED BY 'your_password';
@@ -54,49 +83,26 @@ GRANT ALL PRIVILEGES ON stylofit_db.* TO 'stylofit_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 2. Backend Setup (Spring Boot)
-```bash
-cd backend
-# Update application.properties with your database credentials
-mvn clean install
-mvn spring-boot:run
-```
-
-### 3. AI Service Setup (Python)
-```bash
-cd ai-service
-pip install -r requirements.txt
-python main.py
-```
-
-### 4. Frontend Setup (React)
-```bash
-cd frontend
-npm install
-npm start
-```
-
 ## 🔧 Configuration
 
 ### Backend Configuration (`application.properties`)
 ```properties
-# Database
-spring.datasource.url=jdbc:mysql://localhost:3306/stylofit_db
-spring.datasource.username=stylofit_user
-spring.datasource.password=your_password
+# H2 Database (Development)
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.h2.console.enabled=true
+
+# MySQL Database (Production - uncomment to use)
+# spring.datasource.url=jdbc:mysql://localhost:3306/stylofit_db
+# spring.datasource.username=stylofit_user
+# spring.datasource.password=your_password
 
 # Weather API
-weather.api.key=your_openweather_api_key
+weather.api.key=demo_key
 
 # AI Service
 ai.service.url=http://localhost:5000
-```
-
-### Environment Variables
-```bash
-# Optional: Set environment variables
-export OPENWEATHER_API_KEY=your_api_key
-export MYSQL_PASSWORD=your_db_password
 ```
 
 ## 📱 API Documentation
@@ -141,7 +147,7 @@ export MYSQL_PASSWORD=your_db_password
 ### Backend Technologies
 - **Spring Boot 3.2**: REST API framework
 - **Spring Data JPA**: Database abstraction
-- **MySQL**: Relational database
+- **H2/MySQL**: Database options
 - **Maven**: Dependency management
 
 ### Frontend Technologies
